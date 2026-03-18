@@ -10,46 +10,70 @@ typedef struct profile
 
 int main(int argc, const char* argv[])
 {
+    for (size_t i = 0; i < argc; i++)
+    {
+        printf("%llu: %s, ", i, argv[i]);
+    }
+    printf("\n");
+
+    printf("%i\n", argc);
+    const char* mode = argv[1];
+
     // gpm status
     // gpm switch <alias>
 
-    if (argc == 2)
+    if (argc != 1)
     {
-        if (strcmp(argv[1], "status") == 0)
+        if (strcmp(mode, "status") == 0)
         {
             printf("\x1b[32mUsername:\x1b[39m\n");
             system("git config get user.name");
             printf("\x1b[32mEmail:\x1b[39m\n");
             system("git config get user.email");
         }
-    }
-    
-    if (argc >= 3)
-    {
-        if (strcmp(argv[1], "switch") == 0)
+        else if (strcmp(mode, "list") == 0)
         {
-            const char* profile = argv[2];
-            char* profile_header = "[";
-            profile_header = strcat(profile_header, profile);
-            profile_header = strcat(profile_header, "]");
-
-            printf("%s\n", profile);
-            printf("%s\n", profile_header);
+            char total[] = "";
 
             FILE* file = fopen("./profiles.conf", "r");
             char buffer[128];
 
             while (fgets(buffer, 128, file))
             {
-                printf("%s", buffer);
+                strcat(total, buffer);
+                char* name = "NONE";
+                char* email = "NONE";
 
-                // if (strcmp(profile_header, buffer) == 0)
-                // {
-                //     printf("%s found\n", profile);
-                // }
+                char* token = strtok(buffer, " = ");
+                char* prev_token = "";
+                while (token != NULL)
+                {
+                    if (strchr(token, '\"') != NULL || strchr(token, '\'') != NULL)
+                    {
+                        if (strcmp(prev_token, "name"))
+                        {
+                            name = token;
+                            printf("found: %s\n", name);
+                        }
+                        else if (strcmp(prev_token, "email"))
+                        {
+                            email = token;
+                            printf("found: %s\n", email);
+                        }
+                    }
+
+                    *prev_token = *token;
+                    token = strtok(NULL, " = ");
+                }
+            
+                printf("name: %s\nemail: %s\n", name, email);
             }
 
             fclose(file);
+        }
+        else
+        {
+            printf("aint a command mayte\n");
         }
     }
 
