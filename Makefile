@@ -1,2 +1,2 @@
 default:
-	clang gpm.c -o gpm
+	clang *.c -o gpm

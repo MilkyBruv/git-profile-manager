@@ -16,8 +16,6 @@ class Profile():
 with open("./profiles.ini", "r") as file:
     lines = file.readlines()
 
-# print(lines)
-
 profiles = []
 
 new_alias = None
